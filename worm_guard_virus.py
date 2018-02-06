@@ -20,6 +20,8 @@ def get_video_url(url):
         video_pages.append(each_raw.a.get('href'))
     print(video_pages)
 
+def download_video_from(url):
+
 
 if __name__ == '__main__':
     get_video_url('https://keenanonline.com/training-database/')
