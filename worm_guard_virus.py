@@ -17,7 +17,7 @@ def get_video_url(url):
     pattern = re.compile(r'(https?|ftp|file)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]')
     for each_raw in video_pages_raw:
         # video_pages.append = pattern.match(each_raw)
-        video_pages.append(each_raw.a)
+        video_pages.append(each_raw.a.get('href'))
     print(video_pages)
 
 
