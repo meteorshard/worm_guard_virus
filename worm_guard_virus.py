@@ -3,6 +3,7 @@
 
 import requests
 import re
+import os
 from bs4 import BeautifulSoup
 
 proxies = {'http': 'http://127.0.0.1:1087',
@@ -25,6 +26,7 @@ cookies = {'intercom-session-c2xdup6c': 'MzU1MGtCSlAxeGxEQUVUdXQ0ekErR21EZ20vcVJ
 video_pages_global = []
 
 
+'-----按照分类解析列表页面查找播放页面地址-----'
 def get_video_page_url(categories):
     # video_pages = []
     # r = requests.get(url=url, cookies=cookies, headers=headers)
@@ -37,7 +39,7 @@ def get_video_page_url(categories):
     video_pages = []
 
     for each_category in categories:
-        for page_number in range(1,2):
+        for page_number in range(1,9999):
             index_url = 'https://keenanonline.com/category/{}/page/{}/'.format(each_category, page_number)
             print('Analyzing ' + index_url)
             r = requests.get(url=index_url, cookies=cookies, headers=headers)
@@ -45,7 +47,6 @@ def get_video_page_url(categories):
 
             # Check if the page exists
             valid_check = soup.find_all(id='post-404page')
-            # print(valid_check)
             if valid_check:
                 break
 
@@ -58,6 +59,14 @@ def get_video_page_url(categories):
 
 '-----解析播放页面获得视频文件实际地址-----'
 def download_video_from(url):
+    # Check if the file already exists
+    file_name_pattern = re.compile(r'(?<=https://keenanonline.com/).*?(?=/)')
+    file_name = './downloaded/{}.mp4'.format(file_name_pattern.findall(url)[0])
+
+    if os.path.exists(file_name):
+        print('File "{}" already downloaded.'.format(file_name))
+        return -1
+
     # Get iframe src
     s = requests.session()
     detail_page = s.get(url=url, cookies=cookies, headers=headers)
@@ -79,12 +88,11 @@ def download_video_from(url):
             video_url = re.findall(url_pattern, each_video)[0][:-1]
     print(video_url)
     video_file = s.get(url=video_url, cookies=cookies, headers=headers)
-    file_name_pattern = re.compile(r'(?<=https://keenanonline.com/).*?(?=/)')
-    file_name = '{}.mp4'.format(file_name_pattern.findall(url)[0])
+
     print('Writting file to {} ...'.format(file_name))
     with open(file_name,'wb') as file:
         file.write(video_file.content)
 
 
 if __name__ == '__main__':
-    get_video_page_url(['guard'])
+    get_video_page_url(['guard','passing','submissions'])
