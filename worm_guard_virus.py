@@ -25,48 +25,66 @@ cookies = {'intercom-session-c2xdup6c': 'MzU1MGtCSlAxeGxEQUVUdXQ0ekErR21EZ20vcVJ
 video_pages_global = []
 
 
-def get_video_page_url(url):
+def get_video_page_url(categories):
+    # video_pages = []
+    # r = requests.get(url=url, cookies=cookies, headers=headers)
+    # soup = BeautifulSoup(r.content, "html.parser")
+    # video_pages_raw = soup.find_all('h2', 'entry-title')
+    # for each_raw in video_pages_raw:
+    #     video_pages.append(each_raw.a.get('href'))
+    # return(video_pages)
+
     video_pages = []
-    r = requests.get(url=url, cookies=cookies, headers=headers)
-    soup = BeautifulSoup(r.content, "html.parser")
-    video_pages_raw = soup.find_all('h2', 'entry-title')
-    for each_raw in video_pages_raw:
-        video_pages.append(each_raw.a.get('href'))
-    return(video_pages)
 
+    for each_category in categories:
+        for page_number in range(1,2):
+            index_url = 'https://keenanonline.com/category/{}/page/{}/'.format(each_category, page_number)
+            print('Analyzing ' + index_url)
+            r = requests.get(url=index_url, cookies=cookies, headers=headers)
+            soup = BeautifulSoup(r.content, 'html.parser')
 
+            # Check if the page exists
+            valid_check = soup.find_all(id='post-404page')
+            # print(valid_check)
+            if valid_check:
+                break
+
+            video_pages_raw = soup.find_all('h2', 'entry-title fusion-post-title')
+            for each_raw in video_pages_raw:
+                video_pages.append(each_raw.a.get('href'))
+                download_video_from(each_raw.a.get('href'))
+
+    # print(video_pages)
+
+'-----解析播放页面获得视频文件实际地址-----'
 def download_video_from(url):
     # Get iframe src
     s = requests.session()
     detail_page = s.get(url=url, cookies=cookies, headers=headers)
     soup = BeautifulSoup(detail_page.content, 'html.parser')
     iframe_src = soup.find('iframe').get('src')
+    print(url)
     print(iframe_src)
 
     # # Get the file url of the video
-    # s = requests.session()
-    #
     video_player = s.get(iframe_src, headers=headers, cookies=cookies, proxies=proxies)
-    # print(video_player.content)
 
     pattern = re.compile(r'(?<="progressive":)\[.*?\]')
     result = list(pattern.findall(video_player.content))[0]
-    # print(result)
-    # print(result.split('},')[0])
-    video_url = ""
+
+    # Seach 720p video file
     for each_video in result.split('},'):
         if (each_video.find('720p')!=-1):
             url_pattern = re.compile(r'https://.*?"')
             video_url = re.findall(url_pattern, each_video)[0][:-1]
     print(video_url)
-
+    video_file = s.get(url=video_url, cookies=cookies, headers=headers)
+    file_name_pattern = re.compile(r'(?<=https://keenanonline.com/).*?(?=/)')
+    file_name = '{}.mp4'.format(file_name_pattern.findall(url)[0])
+    print('Writting file to {} ...'.format(file_name))
+    with open(file_name,'wb') as file:
+        file.write(video_file.content)
 
 
 if __name__ == '__main__':
-    # for i in range(1, 4):
-    #     video_pages_global.append(get_video_page_url(
-    #         'https://keenanonline.com/training-database/page/' + str(i)))
-    # print(video_pages_global)
-
-    download_video_from(
-        'https://keenanonline.com/lucas-leite-guard-rollover-sweep/')
+    get_video_page_url(['guard'])
