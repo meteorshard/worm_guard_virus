@@ -4,7 +4,9 @@
 import requests
 import re
 import os
+# from contextlib import closing
 from bs4 import BeautifulSoup
+# from classes.progressbar import ProgressBar
 
 proxies = {'http': 'http://127.0.0.1:1087',
            'https': 'http://127.0.0.1:1087'}
@@ -64,7 +66,7 @@ def download_video_from(url):
     file_name = './downloaded/{}.mp4'.format(file_name_pattern.findall(url)[0])
 
     if os.path.exists(file_name):
-        print('File "{}" already downloaded.'.format(file_name))
+        print('文件"{}"已存在不需要下载'.format(file_name))
         return -1
 
     # Get iframe src
@@ -72,8 +74,8 @@ def download_video_from(url):
     detail_page = s.get(url=url, cookies=cookies, headers=headers)
     soup = BeautifulSoup(detail_page.content, 'html.parser')
     iframe_src = soup.find('iframe').get('src')
-    print(url)
-    print(iframe_src)
+    print('正在从视频播放页面{}解析文件地址'.format(url))
+    print('视频播放框架地址为{}'.format(iframe_src))
 
     # # Get the file url of the video
     video_player = s.get(iframe_src, headers=headers, cookies=cookies, proxies=proxies)
@@ -82,17 +84,49 @@ def download_video_from(url):
     result = list(pattern.findall(video_player.content))[0]
 
     # Seach 720p video file
+    is_found = False
     for each_video in result.split('},'):
         if (each_video.find('720p')!=-1):
             url_pattern = re.compile(r'https://.*?"')
             video_url = re.findall(url_pattern, each_video)[0][:-1]
-    print(video_url)
+            is_found = True
+            print('找到720p文件，地址是:\n{}\n-----'.format(video_url))
+        elif (each_video.find('1080p')!=-1):
+                url_pattern = re.compile(r'https://.*?"')
+                video_url = re.findall(url_pattern, each_video)[0][:-1]
+                is_found = True
+                print('找到1080p文件，地址是:\n{}\n-----'.format(video_url))
+        elif (each_video.find('480p')!=-1):
+            url_pattern = re.compile(r'https://.*?"')
+            video_url = re.findall(url_pattern, each_video)[0][:-1]
+            is_found = True
+            print('找到480p文件，地址是:\n{}\n-----'.format(video_url))
+        elif (each_video.find('360p')!=-1):
+            url_pattern = re.compile(r'https://.*?"')
+            video_url = re.findall(url_pattern, each_video)[0][:-1]
+            is_found = True
+            print('找到360p文件，地址是:\n{}\n-----'.format(video_url))
+
+    if is_found == False:
+        print('找不到视频文件')
+        return -1
+
     video_file = s.get(url=video_url, cookies=cookies, headers=headers)
 
-    print('Writting file to {} ...'.format(file_name))
+    print('正在保存文件到{}...'.format(file_name))
     with open(file_name,'wb') as file:
         file.write(video_file.content)
+    print('文件保存完成')
 
+    # with closing(s.get(url=video_url, cookies=cookies, headers=headers, stream=True)) as video_file:
+    #     chunk_size = 1024 # 单次请求最大值
+    #     content_size = int(video_file.headers['content-length']) # 内容体总大小
+    #     progress = ProgressBar(file_name, total=content_size,
+    #                             unit="KB", chunk_size=chunk_size, run_status="正在下载", fin_status="下载完成")
+    #     with open(file_name, "wb") as file:
+    #        for data in s.iter_content(chunk_size=chunk_size):
+    #            file.write(data)
+    #            progress.refresh(count=len(data))
 
 if __name__ == '__main__':
     get_video_page_url(['guard','passing','submissions'])
