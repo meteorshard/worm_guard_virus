@@ -43,7 +43,7 @@ def get_video_page_url(categories):
     for each_category in categories:
         for page_number in range(1,9999):
             index_url = 'https://keenanonline.com/category/{}/page/{}/'.format(each_category, page_number)
-            print('Analyzing ' + index_url)
+            print('解析页面: {}'.format(index_url))
             r = requests.get(url=index_url, cookies=cookies, headers=headers)
             soup = BeautifulSoup(r.content, 'html.parser')
 
@@ -84,34 +84,38 @@ def download_video_from(url):
     result = list(pattern.findall(video_player.content))[0]
 
     # Seach 720p video file
-    is_found = False
+    video_urls = {}
+    url_pattern = re.compile(r'https://.*?"')
     for each_video in result.split('},'):
         if (each_video.find('720p')!=-1):
-            url_pattern = re.compile(r'https://.*?"')
             video_url = re.findall(url_pattern, each_video)[0][:-1]
-            is_found = True
+            video_urls['720p'] = video_url
             print('找到720p文件，地址是:\n{}\n-----'.format(video_url))
         elif (each_video.find('1080p')!=-1):
-                url_pattern = re.compile(r'https://.*?"')
-                video_url = re.findall(url_pattern, each_video)[0][:-1]
-                is_found = True
-                print('找到1080p文件，地址是:\n{}\n-----'.format(video_url))
-        elif (each_video.find('480p')!=-1):
-            url_pattern = re.compile(r'https://.*?"')
             video_url = re.findall(url_pattern, each_video)[0][:-1]
-            is_found = True
+            video_urls['1080p'] = video_url
+            print('找到1080p文件，地址是:\n{}\n-----'.format(video_url))
+        elif (each_video.find('480p')!=-1):
+            video_url = re.findall(url_pattern, each_video)[0][:-1]
+            video_urls['480p'] = video_url
             print('找到480p文件，地址是:\n{}\n-----'.format(video_url))
         elif (each_video.find('360p')!=-1):
-            url_pattern = re.compile(r'https://.*?"')
             video_url = re.findall(url_pattern, each_video)[0][:-1]
-            is_found = True
+            video_urls['360p'] = video_url
             print('找到360p文件，地址是:\n{}\n-----'.format(video_url))
 
-    if is_found == False:
+    if video_urls:
+        priorities = ['720p','1080p','480p','360p']
+        for each_priority in priorities:
+            if each_priority in video_urls:
+                video_url_to_download = video_urls[each_priority]
+                print('即将下载{}文件: {}'.format(each_priority, video_url_to_download))
+                break
+    else:
         print('找不到视频文件')
         return -1
 
-    video_file = s.get(url=video_url, cookies=cookies, headers=headers)
+    video_file = s.get(url=video_url_to_download, cookies=cookies, headers=headers)
 
     print('正在保存文件到{}...'.format(file_name))
     with open(file_name,'wb') as file:
@@ -129,4 +133,4 @@ def download_video_from(url):
     #            progress.refresh(count=len(data))
 
 if __name__ == '__main__':
-    get_video_page_url(['guard','passing','submissions'])
+    get_video_page_url(['white-belt-course','escapes-defense','guard','passing','submissions'])
