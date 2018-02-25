@@ -133,4 +133,8 @@ def download_video_from(url):
     #            progress.refresh(count=len(data))
 
 if __name__ == '__main__':
+<<<<<<< HEAD
     get_video_page_url(['white-belt-course','escapes-defense','guard','passing','submissions','sparring-footage'])
+=======
+    get_video_page_url(['white-belt-course','escapes-defense','guard','passing','submissions'])
+>>>>>>> c793e5d8bbc3733aea695f7bf8121c2f0a6f2d89
