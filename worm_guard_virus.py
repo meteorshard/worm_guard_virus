@@ -23,8 +23,8 @@ headers = {
     "Referer": "https://keenanonline.com/"
 }
 
-cookies = {'intercom-session-c2xdup6c': 'ZVN3NEVzcERLb1J4YjFSZ2czYllPKzFCbzl4Rks4Ylh0YzZwSmJabWxBUHZzN3l6dFk5bFNRemlHRjltbDMvcS0tYVhXUmNUYSt2UTAvMit1TTdoKzJrdz09--83c1047a588cf41107cbd731bda52ebae4786e44',
-           'wordpress_logged_in_4b3d08e309852ea3c6d29dfbcc1541a1': 'meteorshard%7C1521890184%7CzWtfTpwAuRq5iUl0gdKZ5UOGFOgkTVLL8WpNBgc4RPv%7C4ee765df5ce2e51988dce2c9f00e0246c170c99fd0d1def4097d3c5d290e4d5f'}
+cookies = {'intercom-session-c2xdup6c': 'RnZqOVZYcUM0NWYrK3B4TnZFcGJHYk5IUUc2MUFSbk9RTTh5bFVwaHZqVm8rNGJVcTFrVlgyaktEVWxuL0Ivci0tMHE5TVNrQzVWV0FaZ1ZGM2s3akxFUT09--a736c9f341b64ce0bf321573fa54f17fc57eef7a',
+           'wordpress_logged_in_4b3d08e309852ea3c6d29dfbcc1541a1': 'meteorshard%7C1524640892%7CDqtZF6IQQAPQWhRyICMDAQPdqDEOHLRj6rH3yXMLgRq%7Cc162ca43d6f44d447a76639390ac47bd394b447314e54f56526c473e454415dc'}
 
 video_pages_global = []
 
@@ -151,4 +151,4 @@ def download_video_from(url):
         #            progress.refresh(count=len(data))
 
 if __name__ == '__main__':
-    get_video_page_url(['passing','submissions','sparring-footage','white-belt-course','escapes-defense','guard'])
+    get_video_page_url(['no-gi','stand-up','blue-belt-course','passing','submissions','sparring-footage','white-belt-course','escapes-defense','guard'])
