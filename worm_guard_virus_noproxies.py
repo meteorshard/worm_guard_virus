@@ -8,9 +8,6 @@ import os
 from bs4 import BeautifulSoup
 # from classes.progressbar import ProgressBar
 
-proxies = {'http': 'http://127.0.0.1:1087',
-           'https': 'http://127.0.0.1:1087'}
-
 headers = {
     # "Host": "player.vimeo.com",
     # "Connection": "keep-alive",
@@ -24,7 +21,7 @@ headers = {
 }
 
 cookies = {'intercom-id-c2xdup6c': '2d389256-5b2c-46d9-8d93-8eb3f5e120bf',
-           'wordpress_logged_in_4b3d08e309852ea3c6d29dfbcc1541a1': 'meteorshard%7C1545308757%7CL30ewhnQ5WV3zaqExjqawEPjyAhCMCi3Pb66aIqR53q%7Cc49a867c5d7bc7aba12d516c203edcb0787d85befc48ff9b71b121a889288734'}
+           'wordpress_logged_in_4b3d08e309852ea3c6d29dfbcc1541a1': 'meteorshard%7C1544084563%7CphgoIO4kiDqmNO90HnF7MdNxnjtKhBYw7BI71apQe1n%7Ce47c363b9e4e1f3ac3e42e0de091551d802b2dcff1bcf0111d6da201fe6a82ba'}
 
 video_pages_global = []
 
@@ -33,7 +30,7 @@ video_pages_global = []
 
 def request_with_retry(url, max_retries=3):
     try:
-        return requests.get(url=url, cookies=cookies, headers=headers, proxies=proxies)
+        return requests.get(url=url, cookies=cookies, headers=headers)
     except:
         if max_retries > 0:
             print('连接失败，重试连接，剩余重试次数：{}'.format(max_retries - 1))
